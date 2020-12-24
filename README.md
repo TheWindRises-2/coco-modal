@@ -1,5 +1,5 @@
 # coco-modal
-coco-modal是一个简单实用的javascript弹框插件
+coco-modal是一个简单实用的javascript弹框插件 兼容主流浏览器 ie兼容到ie9 (ie9没有动画效果)
 
 ## Usage
 
@@ -15,7 +15,7 @@ coco.init({
   });
 ```
 
-base
+基本用法 （必须先运行 coco.init 方法, 再使用弹框方法）
   
 
 ```html
@@ -38,12 +38,18 @@ base
           buttonColor:'#e71e63'
       });
       let root = document.body.querySelector(".root");
+      let count = 0;
       root.addEventListener("click", () => {
-         coco("hello world");
+         let n = count++ % 3;
+         n === 0 && coco("hello world");
+         n === 1 && coco.alert("alert");
+         n === 2 && coco.confirm("confirm");
       });
     </script>
 ```
-use input
+
+显示一个输入框
+
 ```html
     <style>
         body{
@@ -84,7 +90,7 @@ use input
       });
     </script>
 ```
-options
+coco.init 方法接收的参数作用所有的modal，单个modal的参数会覆盖全局参数
 
 ```
   let initOptions = {
