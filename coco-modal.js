@@ -963,7 +963,6 @@
         if (!Initialized) {
             throw new Error("请先运行 'coco.init()' 方法!")
         }
-        console.log(Vue.prototype.$isServe);
 
         if (typeof Vue !== 'undefined' && Vue.prototype.$isServer) return;
         let a = {}
