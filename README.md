@@ -75,6 +75,7 @@ coco.init({
             placeholder: "your name",
           },
         }).onClose((cc, isOk, done) => {
+          console.log(cc.closeType);
           if (isOk) {
             if (cc.inputValue.trim() === "") {
               cc.setErrorText("输入不能为空！");
