@@ -88,6 +88,7 @@ options
 
 ```
   let initOptions = {
+        el: null, // 一个dom节点或者选择器  el: '#login'
         maskClose: true,
         header: true,
         footer: true,
