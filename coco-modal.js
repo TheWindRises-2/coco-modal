@@ -426,9 +426,11 @@
             onMount,
             notMount,
             fullScreen,
-            hooks
+            hooks,
+            isClosed,
+            inputAttrs
         } = a;
-        if (inArray(a, wrapperArray)) {
+        if (inArray(a, wrapperArray)||!isClosed) {
             return
         }
         let duration = animation ? 380 : 0;
@@ -442,13 +444,16 @@
         blurModal();
         addModal(a);
         (wrapperArray.length > 1) && resetModalIndex();
+        displayModal(wrapper)
 
         isHideScrollbar();
-        displayModal(wrapper)
         a.scrollTop = wrapper.scrollTop
         a.scrollLeft = wrapper.scrollLeft
         if (wrapperArray.length === 1) {
             animation && startAnimation(CocoMask, 'fade', true)
+        }
+        if(inputAttrs){
+            a.inputValue =  a.inputEl.value || ''
         }
         fullScreen && fullScreenModal(a)
         paddingBottom(modal)
@@ -473,19 +478,18 @@
             wrapper,
             modal,
             isOpen,
-            $el,
             destroy,
             div,
             animation,
             args,
-            hooks
+            hooks,
         } = a
-        let isVue = $el ? true : false
-        let duration = animation ? 300 : 0;
+        let duration = animation ? 280 : 0;
 
         if (nowTime() - openTime < 380 || !isOpen) return;
-        a.isOpen = false
 
+        a.isOpen = false;
+        a.isClosed = false;
         deleteArraryItems(a, wrapperArray)
 
 
@@ -496,7 +500,6 @@
 
         hooks && hooks.close && hooks.close(a);
         rafTimeout(() => {
-            isVue && a.$emit('update:visible', false);
             (wrapperArray.length > 0) && resetModalIndex();
 
             clearClass(modal, 'zoom')
@@ -515,10 +518,8 @@
 
             cocoFocusEl && cocoFocusEl.focus();
             hooks && hooks.closed && hooks.closed(a)
+       
             if (destroy) {
-                body.contains(div) && removeChildNode(div)
-            }
-            if (destroy && !isVue) {
                 body.contains(div) && removeChildNode(div)
 
                 deleteArraryItems({
@@ -539,6 +540,7 @@
                     display: 'none'
                 })
             }
+            a.isClosed = true;
         }, duration);
     }
 
@@ -910,7 +912,6 @@
             }
         }
         a.errorText = ''
-        a.inputValue = a.inputAttrs && a.inputEl.value || ''
         a.setErrorText = text => {
             errorEl.innerText = text
             a.errorText = text
@@ -1004,6 +1005,7 @@
         a.openTime = 0
         a.isLoading = false
         a.notMount = true
+        a.isClosed = true
         a.scrollbarWidth = scrollbarWidth
         initArgs(a)
 
@@ -1077,7 +1079,7 @@
             let head = doc.head
             let css = doc.createElement('style')
             let cssStr = `
-            @-webkit-keyframes coco-loading{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes coco-loading{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@-webkit-keyframes cocoFadeIn{0%{opacity:0}to{opacity:1}}@keyframes cocoFadeIn{0%{opacity:0}to{opacity:1}}@-webkit-keyframes cocoFadeOut{0%{opacity:1}to{opacity:0}}@keyframes cocoFadeOut{0%{opacity:1}to{opacity:0}}@-webkit-keyframes cocoZoomIn{0%{-webkit-transform:scale3d(.25,.25,.25);transform:scale3d(.25,.25,.25);opacity:0}to{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}}@keyframes cocoZoomIn{0%{-webkit-transform:scale3d(.25,.25,.25);transform:scale3d(.25,.25,.25);opacity:0}to{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}}@-webkit-keyframes cocoZoomOut{0%{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}to{-webkit-transform:scale3d(.1,.1,.1);transform:scale3d(.1,.1,.1);opacity:0}}@keyframes cocoZoomOut{0%{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}to{-webkit-transform:scale3d(.1,.1,.1);transform:scale3d(.1,.1,.1);opacity:0}}[class|=coco],[class|=coco]::after,[class|=coco]::before{box-sizing:border-box}.coco-modal-mask,.coco-modal-wrapper{position:fixed;width:100%;height:100%;top:0;left:0}.coco-modal-wrapper{right:0;bottom:0;overflow:auto;-webkit-overflow-scrolling:touch;z-index:2020}.coco-modal-mask{background-color:rgba(0,0,0,.425);z-index:2008}.coco-modal-mask.blur{-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);background-color:rgba(0,0,0,.5)}.coco-modal{position:relative;margin:0 auto;top:15vh;outline:0;width:500px;-webkit-transform:translateZ(0);transform:translateZ(0)}.coco-modal-content{border-radius:6px;box-shadow:0 0 1px 0 rgba(0,0,0,.08),0 0 5px 0 rgba(0,0,0,.08);background-color:#fff}.coco-modal-content.coco-no-shadow{box-shadow:none}.fade-enter,.fade-leave{-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-play-state:paused;animation-play-state:paused;-webkit-animation-timing-function:linear;animation-timing-function:linear;-webkit-animation-duration:.14s;animation-duration:.14s;transition:none;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:opacity}.fade-enter{opacity:0}.fade-leave{-webkit-animation-delay:.08s;animation-delay:.08s}.fade-enter.fade-enter-active{-webkit-animation-name:cocoFadeIn;animation-name:cocoFadeIn;-webkit-animation-play-state:running;animation-play-state:running}.fade-leave.fade-leave-active,.zoom-enter.zoom-enter-active,.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoFadeOut;animation-name:cocoFadeOut;-webkit-animation-play-state:running;animation-play-state:running}.zoom-enter,.zoom-leave{-webkit-animation-duration:.3s;animation-duration:.3s;-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-play-state:paused;animation-play-state:paused;transition:none;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:opacity,transform}.zoom-enter{-webkit-animation-delay:.08s;animation-delay:.08s;opacity:0;-webkit-animation-timing-function:cubic-bezier(.082,.8,.18,1);animation-timing-function:cubic-bezier(.082,.8,.18,1)}.zoom-enter.zoom-enter-active,.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoZoomIn;animation-name:cocoZoomIn}.zoom-leave{-webkit-animation-timing-function:cubic-bezier(.52,.3,.06,1);animation-timing-function:cubic-bezier(.52,.3,.06,1)}.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoZoomOut;animation-name:cocoZoomOut}.rt-modal-title{position:relative;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.coco-modal-close{position:absolute;width:25px;height:25px;right:15px;top:15px;z-index:1;cursor:pointer}.coco-modal-close::after,.coco-modal-close::before{content:'';position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%) rotate(-45deg);transform:translate(-50%,-50%) rotate(-45deg);width:2px;height:13px;background-color:#a5a5a5;transition:all .15s ease-out;display:block;border-radius:2px}.coco-modal-close::after{-webkit-transform:translate(-50%,-50%) rotate(45deg);transform:translate(-50%,-50%) rotate(45deg)}.coco-modal-close:hover::after,.coco-modal-close:hover::before{background-color:#646464}.coco-modal-close:active::after,.coco-modal-close:active::before{background-color:#010000}.coco-modal-body,.coco-modal-header{position:relative;font-size:18px;color:#000002;padding:18px}.coco-modal-body{padding:20px 18px;font-size:14px;color:#666667;overflow:auto}.coco-modal-footer{position:relative;text-align:right;padding:18px}.coco-btn{font-size:14px;text-decoration:none;padding:6px 22px;white-space:nowrap;border-radius:6px;font-weight:600;display:inline-block;cursor:pointer;border:0;-webkit-appearance:none;-moz-appearance:none;appearance:none;outline:0}.coco-btn.cancel{margin-left:10px;color:#504949;background-color:transparent;font-weight:500}.coco-btn,.coco-btn span,.coco-loading{position:relative}.coco-btn.ok{background-color:#4285ff;color:#fff}.coco-btn.ok::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;border-radius:inherit;transition:all .16s ease-out;background-color:transparent}.coco-btn.ok:hover::before{background-color:rgba(0,0,0,.08)}.coco-btn.ok:active::before{transition:all .05s ease;background-color:rgba(0,0,0,.16)}.coco-btn.ok.coco-is-loading::before{background-color:transparent}.coco-loading{width:14px;height:14px;border:3px solid #fff;border-top:3px solid transparent;border-radius:7px;margin-right:7px;display:none;-webkit-animation:coco-loading 1s linear infinite;animation:coco-loading 1s linear infinite}.coco-is-loading{cursor:not-allowed}.coco-hidden{visibility:hidden}.coco-input{margin:14px 0;width:100%;height:39px;border-radius:6px;padding:7px 15px;font-weight:400;-webkit-appearance:none;-moz-appearance:none;appearance:none;color:#333;background-color:#f3f3f4;outline:0;border:1px solid transparent;font-size:14px;box-shadow:0 0 0 0 rgba(53,120,229,.1);transition:all .16s ease-out;line-height:20px}.coco-input::-webkit-input-placeholder{line-height:24px;color:#a2a2a3}.coco-input::-moz-placeholder{line-height:24px;color:#a2a2a3}.coco-input:-ms-input-placeholder,.coco-input::-ms-input-placeholder{line-height:24px;color:#a2a2a3}.coco-input::placeholder{line-height:24px;color:#a2a2a3}.coco-input:hover{transition:all .1s ease-out;background-color:#fff;box-shadow:0 0 0 1px rgba(66,133,255,.25);border-color:rgba(66,133,255,.5)}.coco-input:focus{background-color:#fff;box-shadow:0 0 0 1px rgba(66,133,255,.25);border-color:rgba(66,133,255,.5)}.coco-input:active{transition:all .08s ease-out;background-color:#fff;border-color:#cbcbcc;box-shadow:0 0 0 0 rgba(66,133,255,.125)}.coco-error-text{font-size:14px;color:#e71e63;margin:5px 10px}
+                @-webkit-keyframes coco-loading{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@keyframes coco-loading{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(360deg);transform:rotate(360deg)}}@-webkit-keyframes cocoFadeIn{0%{opacity:0}to{opacity:1}}@keyframes cocoFadeIn{0%{opacity:0}to{opacity:1}}@-webkit-keyframes cocoFadeOut{0%{opacity:1}to{opacity:0}}@keyframes cocoFadeOut{0%{opacity:1}to{opacity:0}}@-webkit-keyframes cocoZoomIn{0%{-webkit-transform:scale3d(.25,.25,.25);transform:scale3d(.25,.25,.25);opacity:0}to{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}}@keyframes cocoZoomIn{0%{-webkit-transform:scale3d(.25,.25,.25);transform:scale3d(.25,.25,.25);opacity:0}to{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}}@-webkit-keyframes cocoZoomOut{0%{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}to{-webkit-transform:scale3d(.1,.1,.1);transform:scale3d(.1,.1,.1);opacity:0}}@keyframes cocoZoomOut{0%{-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1);opacity:1}to{-webkit-transform:scale3d(.1,.1,.1);transform:scale3d(.1,.1,.1);opacity:0}}[class|=coco],[class|=coco]::after,[class|=coco]::before{box-sizing:border-box}.coco-modal-mask,.coco-modal-wrapper{position:fixed;width:100%;height:100%;top:0;left:0}.coco-modal-wrapper{right:0;bottom:0;overflow:auto;-webkit-overflow-scrolling:touch;z-index:2020}.coco-modal-mask{background-color:rgba(0,0,0,.425);z-index:2008}.coco-modal-mask.blur{-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);background-color:rgba(0,0,0,.5)}.coco-modal{position:relative;margin:0 auto;top:15vh;outline:0;width:500px;-webkit-transform:translateZ(0);transform:translateZ(0)}.coco-modal-content{border-radius:6px;box-shadow:0 0 1px 0 rgba(0,0,0,.08),0 0 5px 0 rgba(0,0,0,.08);background-color:#fff}.coco-modal-content.coco-no-shadow{box-shadow:none}.fade-enter,.fade-leave{-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-play-state:paused;animation-play-state:paused;-webkit-animation-timing-function:linear;animation-timing-function:linear;-webkit-animation-duration:.14s;animation-duration:.14s;transition:none;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:opacity}.fade-enter{opacity:0}.fade-leave{-webkit-animation-delay:.08s;animation-delay:.08s}.fade-enter.fade-enter-active{-webkit-animation-name:cocoFadeIn;animation-name:cocoFadeIn;-webkit-animation-play-state:running;animation-play-state:running}.fade-leave.fade-leave-active,.zoom-enter.zoom-enter-active,.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoFadeOut;animation-name:cocoFadeOut;-webkit-animation-play-state:running;animation-play-state:running}.zoom-enter{-webkit-animation-duration:.3s;animation-duration:.3s}.zoom-enter,.zoom-leave{-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-play-state:paused;animation-play-state:paused;transition:none;pointer-events:none;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:opacity,transform}.zoom-enter{-webkit-animation-delay:.08s;animation-delay:.08s;opacity:0;-webkit-animation-timing-function:cubic-bezier(.08,.8,.18,1);animation-timing-function:cubic-bezier(.08,.8,.18,1)}.zoom-enter.zoom-enter-active,.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoZoomIn;animation-name:cocoZoomIn}.zoom-leave{-webkit-animation-duration:.28s;animation-duration:.28s;-webkit-animation-timing-function:cubic-bezier(.52,.3,.06,1);animation-timing-function:cubic-bezier(.52,.3,.06,1)}.zoom-leave.zoom-leave-active{-webkit-animation-name:cocoZoomOut;animation-name:cocoZoomOut}.rt-modal-title{position:relative;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.coco-modal-close{position:absolute;width:25px;height:25px;right:15px;top:15px;z-index:1;cursor:pointer}.coco-modal-close::after,.coco-modal-close::before{content:'';position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%) rotate(-45deg);transform:translate(-50%,-50%) rotate(-45deg);width:2px;height:13px;background-color:#a5a5a5;transition:all .15s ease-out;display:block;border-radius:2px}.coco-modal-close::after{-webkit-transform:translate(-50%,-50%) rotate(45deg);transform:translate(-50%,-50%) rotate(45deg)}.coco-modal-close:hover::after,.coco-modal-close:hover::before{background-color:#646464}.coco-modal-close:active::after,.coco-modal-close:active::before{background-color:#010000}.coco-modal-body,.coco-modal-header{position:relative;font-size:18px;color:#000002;padding:18px}.coco-modal-body{padding:20px 18px;font-size:14px;color:#666667;overflow:auto}.coco-modal-footer{position:relative;text-align:right;padding:18px}.coco-btn{font-size:14px;text-decoration:none;padding:6px 22px;white-space:nowrap;border-radius:6px;font-weight:600;display:inline-block;cursor:pointer;border:0;-webkit-appearance:none;-moz-appearance:none;appearance:none;outline:0}.coco-btn.cancel{margin-left:10px;color:#504949;background-color:transparent;font-weight:500}.coco-btn,.coco-btn span,.coco-loading{position:relative}.coco-btn.ok{background-color:#4285ff;color:#fff}.coco-btn.ok::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;border-radius:inherit;transition:all .16s ease-out;background-color:transparent}.coco-btn.ok:hover::before{background-color:rgba(0,0,0,.08)}.coco-btn.ok:active::before{transition:all .05s ease;background-color:rgba(0,0,0,.16)}.coco-btn.ok.coco-is-loading::before{background-color:transparent}.coco-loading{width:14px;height:14px;border:3px solid #fff;border-top:3px solid transparent;border-radius:7px;margin-right:7px;display:none;-webkit-animation:coco-loading 1s linear infinite;animation:coco-loading 1s linear infinite}.coco-is-loading{cursor:not-allowed}.coco-hidden{visibility:hidden}.coco-input{margin:14px 0;width:100%;height:39px;border-radius:6px;padding:7px 15px;font-weight:400;-webkit-appearance:none;-moz-appearance:none;appearance:none;color:#333;background-color:#f3f3f4;outline:0;border:1px solid transparent;font-size:14px;box-shadow:0 0 0 0 rgba(53,120,229,.1);transition:all .16s ease-out;line-height:20px}.coco-input::-webkit-input-placeholder{line-height:24px;color:#a2a2a3}.coco-input::-moz-placeholder{line-height:24px;color:#a2a2a3}.coco-input:-ms-input-placeholder,.coco-input::-ms-input-placeholder{line-height:24px;color:#a2a2a3}.coco-input::placeholder{line-height:24px;color:#a2a2a3}.coco-input:hover{transition:all .1s ease-out;background-color:#fff;box-shadow:0 0 0 1px rgba(66,133,255,.25);border-color:rgba(66,133,255,.5)}.coco-input:focus{background-color:#fff;box-shadow:0 0 0 1px rgba(66,133,255,.25);border-color:rgba(66,133,255,.5)}.coco-input:active{transition:all .08s ease-out;background-color:#fff;border-color:#cbcbcc;box-shadow:0 0 0 0 rgba(66,133,255,.125)}.coco-error-text{font-size:14px;color:#e71e63;margin:5px 10px}
             `;
             addSomeEvents()
             css.innerHTML = cssStr
