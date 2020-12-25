@@ -6,7 +6,9 @@ coco-modal是一个简单实用的javascript弹框插件，模仿了 [ant-modal]
 
 install via npm:
 
+```
 npm install coco-modal
+```
 
 ```
 import coco from 'coco-modal'
@@ -18,13 +20,11 @@ coco.init({
 
 ## Examples
 
-在线示例：
-
-[Examples](https://unpkg.com/coco-modal/example/example.html)
+在线示例： [Examples](https://unpkg.com/coco-modal/example/example.html)
 
 
 
-基本用法 （必须先运行 coco.init 方法, 再使用弹框方法）
+基本用法 （必须先运行 coco.init(), 再使用弹框）
   
 
 ```html
