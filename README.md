@@ -1,19 +1,28 @@
 # coco-modal
-coco-modal是一个简单实用的javascript弹框插件 兼容主流浏览器 ie兼容到ie9 (ie9没有动画效果)
+coco-modal是一个简单实用的javascript弹框插件，模仿了 [ant-modal](https://ant.design/components/modal-cn/)， 兼容主流浏览器 ie兼容到ie9 (ie9没有动画效果)
 
+ 
 ## Usage
 
 install via npm:
 
-```
 npm install coco-modal
 
+```
 import coco from 'coco-modal'
 
 coco.init({
     buttonColor: '#2ea44f'
   });
 ```
+
+## Examples
+
+在线示例：
+
+[Examples](https://unpkg.com/coco-modal/example/example.html)
+
+
 
 基本用法 （必须先运行 coco.init 方法, 再使用弹框方法）
   
