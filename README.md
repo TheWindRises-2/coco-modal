@@ -18,6 +18,9 @@ coco.init({
   });
 ```
 
+```
+<script src="https://unpkg.com/coco-modal/coco-modal.min.js"></script>
+```
 ## Examples
 
 在线示例： [Examples](https://unpkg.com/coco-modal/example/example.html)
