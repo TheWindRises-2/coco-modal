@@ -53,18 +53,35 @@
     animation: isAnimation,
   };
   let Initialized = false;
-  let CocoConfig = {};
 
   function ieVersion() {
-    let theUA = w.navigator.userAgent.toLowerCase();
-    if (
-      (theUA.match(/msie\s\d+/) && theUA.match(/msie\s\d+/)[0]) ||
-      (theUA.match(/trident\s?\d+/) && theUA.match(/trident\s?\d+/)[0])
-    ) {
-      return (
-        theUA.match(/msie\s\d+/)[0].match(/\d+/)[0] ||
-        theUA.match(/trident\s?\d+/)[0]
-      );
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isIE =
+      userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
+    var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
+    var isIE11 =
+      userAgent.indexOf("Trident") > -1 && userAgent.indexOf("rv:11.0") > -1;
+    if (isIE) {
+      var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+      reIE.test(userAgent);
+      var fIEVersion = parseFloat(RegExp["$1"]);
+      if (fIEVersion == 7) {
+        return 7;
+      } else if (fIEVersion == 8) {
+        return 8;
+      } else if (fIEVersion == 9) {
+        return 9;
+      } else if (fIEVersion == 10) {
+        return 10;
+      } else {
+        return 6; //IE版本<=7
+      }
+    } else if (isEdge) {
+      return "edge"; //edge
+    } else if (isIE11) {
+      return 11; //IE11
+    } else {
+      return 100; //不是ie浏览器
     }
   }
 
@@ -491,6 +508,7 @@
         deleteBodyStyle();
       }
 
+      a.hideLoading();
       a.isClosed = true;
       cocoFocusEl && cocoFocusEl.focus();
       hooks && hooks.closed && hooks.closed(a);
@@ -927,9 +945,11 @@
   }
 
   function initArgs(a) {
-    for (const key in initOptions) {
-      if (CocoConfig[key] !== undefined) {
-        initOptions[key] = CocoConfig[key];
+    if (w.CocoConfig) {
+      for (const key in initOptions) {
+        if (w.CocoConfig[key] !== undefined) {
+          initOptions[key] = w.CocoConfig[key];
+        }
       }
     }
     for (const key in initOptions) {
@@ -977,9 +997,6 @@
   }
 
   function coco(text, title, args = {}) {
-    if (!Initialized) {
-      throw new Error("请先运行 'coco.init()' 方法!");
-    }
 
     if (typeof Vue !== "undefined" && Vue.prototype.$isServer) return;
     let a = {};
@@ -1060,14 +1077,17 @@
     };
     return a;
   }
-
+  addEvent(w, "DOMContentLoaded", () => {
+    init();
+  });
   coco.alert = function (text, title, args) {
     return coco(text, title, args, "alert");
   };
   coco.confirm = function (text, title, args) {
     return coco(text, title, args, "confirm");
   };
-  coco.init = function (obj = {}) {
+
+  function init() {
     if (Initialized) {
       return;
     }
@@ -1076,17 +1096,9 @@
     docEl = doc.documentElement;
     insertCssInHead();
     scrollbarWidth = getBarWidth();
-    if (docEl) {
-    }
-    for (const key in initOptions) {
-      if (obj[key] !== undefined) {
-        initOptions[key] = obj[key];
-      }
-    }
-    CocoConfig = obj;
-    Initialized = true;
-  };
 
+    Initialized = true;
+  }
   function insertCssInHead() {
     if (doc && doc.head) {
       let head = doc.head;
