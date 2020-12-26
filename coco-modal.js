@@ -271,8 +271,6 @@
 
   let wrapperArray = [];
 
-
-
   function blurModal() {
     let l = wrapperArray.length;
     if (l) {
@@ -284,7 +282,7 @@
   let modalElID = {};
 
   function initModal(a) {
-    let { wrapper, modal, okButtonEl, destroy, el, inputAttrs } = a;
+    let { wrapper, modal, okButtonEl, destroy, el, inputAttrs, domEl } = a;
     initModalData(a);
     needRender(a);
     addEvent(wrapper, "scroll", (_) => {
@@ -316,8 +314,10 @@
       if (destroy) {
         elm = elm.cloneNode(true);
       }
-      removeClass(elm, "coco-hidden");
-      a.bodyEl.appendChild(elm);
+      css(elm, {
+        display: "",
+      });
+      a.domEl.appendChild(elm);
     }
     let div = r({});
     a.div = div;
@@ -745,14 +745,20 @@
                             is: [a, "inputEl"],
                           }),
                         ]),
-                        r({}, [
-                          r({
-                            class: "coco-error-text",
-                            is: [a, "errorEl"],
-                          }),
-                        ]),
                       ]
                     ),
+                    r({}, [
+                      r({
+                        class: "",
+                        is: [a, "domEl"],
+                      }),
+                    ]),
+                    r({}, [
+                      r({
+                        class: "coco-error-text",
+                        is: [a, "errorEl"],
+                      }),
+                    ]),
                   ]
                 ),
                 r(
@@ -842,7 +848,11 @@
       inputAttrs,
       closeButton,
       closeButtonEl,
+      el,
+      domEl,
     } = a;
+
+    !el && removeChildNode(domEl);
     !header && removeChildNode(headerEl);
     !footer && removeChildNode(footerEl);
     !inputAttrs && removeChildNode(inputWrapper);
@@ -874,6 +884,7 @@
       buttonColor,
       top,
       width,
+      errorEl,
     } = a;
 
     css(modal, {
@@ -884,6 +895,12 @@
     css(okButtonEl, {
       backgroundColor: buttonColor,
     });
+
+    a.errorText = "";
+    a.setErrorText = (text) => {
+      errorEl.innerText = text;
+      a.errorText = text;
+    };
     titleSpan.innerText = title;
     textEl.innerText = text;
     htmlEl.innerHTML = html;
@@ -892,18 +909,13 @@
   }
 
   function initInput(a) {
-    let { inputEl, inputAttrs, errorEl } = a;
+    let { inputEl, inputAttrs } = a;
     for (const key in inputAttrs) {
       if (inputAttrs.hasOwnProperty(key)) {
         const el = inputAttrs[key];
         inputEl.setAttribute(key, el);
       }
     }
-    a.errorText = "";
-    a.setErrorText = (text) => {
-      errorEl.innerText = text;
-      a.errorText = text;
-    };
     addEvent(inputEl, "input", (e) => {
       a.inputValue = e.target.value;
     });
