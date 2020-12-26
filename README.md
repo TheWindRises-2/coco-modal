@@ -22,7 +22,7 @@ coco('hello world')
 ```
 ## Examples
 
-在线示例： [Examples](https://unpkg.com/coco-modal/example/example.html)
+[在线示例](https://unpkg.com/coco-modal/example/example.html)
 
 
 
