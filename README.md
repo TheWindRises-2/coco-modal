@@ -1,5 +1,6 @@
 # coco-modal
-coco-modal是一个简单实用的javascript弹框插件， 兼容主流浏览器 ie兼容到ie9 (ie9没有动画效果)
+
+coco-modal是一个简单实用的javascript弹框插件， 兼容主流浏览器，兼容至ie9 (ie9没有动画效果)
 
  
 ## Usage
@@ -16,6 +17,8 @@ import coco from 'coco-modal'
 coco.init({
     buttonColor: '#2ea44f'
   });
+  
+coco('hello world')
 ```
 
 ```
