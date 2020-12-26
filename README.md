@@ -13,10 +13,6 @@ npm install coco-modal
 
 ```
 import coco from 'coco-modal'
-
-coco.init({
-    buttonColor: '#2ea44f'
-  });
   
 coco('hello world')
 ```
@@ -30,7 +26,7 @@ coco('hello world')
 
 
 
-基本用法 （必须先运行 coco.init(), 再使用弹框）
+基本用法 
   
 
 ```html
@@ -48,10 +44,9 @@ coco('hello world')
     <div class="root"></div>
     <script src="https://unpkg.com/coco-modal/coco-modal.min.js"></script>
     <script>
-      // init coco modal
-      coco.init({
-          buttonColor:'#e71e63'
-      });
+      window.CocoConfig = {
+         buttonColor:'#e71e63'
+      }
       let root = document.body.querySelector(".root");
       let count = 0;
       root.addEventListener("click", () => {
@@ -80,8 +75,10 @@ coco('hello world')
     <div class="root"></div>
     <script src="https://unpkg.com/coco-modal/coco-modal.min.js"></script>
     <script>
-      // init coco modal
-      coco.init();
+       window.CocoConfig = {
+         buttonColor:'#e71e63'
+      }
+     
       let root = document.body.querySelector(".root");
       root.addEventListener("click", () => {
         coco({
@@ -106,10 +103,10 @@ coco('hello world')
       });
     </script>
 ```
-coco.init 方法接收的参数作用所有的modal，单个modal的参数会覆盖全局参数
+ window.CocoConfig 接收的参数作用所有的modal，单个modal的参数会覆盖全局参数
 
 ```
-  let initOptions = {
+    {
         el: null, // 一个dom节点或者选择器  el: '#login'
         maskClose: true,
         header: true,
