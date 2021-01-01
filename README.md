@@ -8,7 +8,7 @@ coco-modal是一个简单实用的javascript弹框插件， 兼容主流浏览�
 install via npm:
 
 ```
-npm install coco-modal
+npm install coco-modal -S
 ```
 
 ```
