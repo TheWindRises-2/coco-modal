@@ -2,6 +2,9 @@
 
 coco-modal是一个简单实用的javascript弹框插件， 兼容主流浏览器，兼容至ie9 (ie9没有动画效果)
 
+[coco-moda-vue](https://github.com/TheWindRises-2/coco-modal-vue)
+ 
+[coco-moda-react](https://github.com/TheWindRises-2/coco-modal-react)
  
 ## Usage
 
