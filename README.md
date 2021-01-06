@@ -89,7 +89,7 @@ coco('hello world')
           inputAttrs: {
             placeholder: "your name",
           },
-        }).onClose((cc, isOk, done) => {
+        }).onClose(( isOk,cc, done) => {
           console.log(cc.closeType);
           if (isOk) {
             if (cc.inputValue.trim() === "") {
